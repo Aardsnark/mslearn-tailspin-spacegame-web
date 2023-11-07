@@ -26,9 +26,9 @@ stages:
       inputs:
         version: '$(dotnetSdkVersion)'
 
-    - task: NuGetToolInstaller@0
-      inputs:
-        versionSpec: '5.9.1'
+    # - task: NuGetToolInstaller@0
+    #   inputs:
+    #     versionSpec: '5.9.1'
 
     - task: Npm@1
       displayName: 'Run npm install'
@@ -45,17 +45,29 @@ stages:
       displayName: 'Write build info'
       workingDirectory: $(wwwrootDir)
 
-    - task: NuGetCommand@2
+    # - task: NuGetCommand@2
+    #   displayName: 'Restore project dependencies'
+    #   inputs:
+    #     command: 'restore'
+    #     restoreSolution: '**/*.sln'
+    #     feedsToUse: 'select'
+    #     vstsFeed: '$(System.TeamProject)/Tailspin.SpaceGame.Web.Models'
+
+    - task: DotNetCoreCLI@2
       displayName: 'Restore project dependencies'
       inputs:
         command: 'restore'
-        restoreSolution: '**/*.sln'
+        projects: '**/*.sln'
         feedsToUse: 'select'
         vstsFeed: '$(System.TeamProject)/Tailspin.SpaceGame.Web.Models'
 
-    #- template: templates/coverage.yml
-    #  parameters:
-    #    buildConfiguration: 'Release'   
+    - template: templates/build.yml
+      parameters:
+        buildConfiguration: 'Release' 
+
+    - template: templates/coverage.yml
+      parameters:
+        buildConfiguration: 'Release'   
 
     - template: templates/publish.yml
       parameters:
